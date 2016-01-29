@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var knex = require('../db/knex');
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -9,7 +10,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/data', function(req,res){
   var returnData = {}
-  return knex.select().table('posts')
+  return knex('comments')
+    .join('posts', 'comments.post_id', '=', 'posts.id' )
   .then(function(results){
     returnData.posts = results;
   })
@@ -25,7 +27,38 @@ router.get('/data', function(req,res){
   })
 })
 
+router.post('/addpost', function(req, res){
+  return knex('posts')
+  .insert({
+    post: req.body.post,
+    name:req.body.name
+  })
+  .then(function(results){
+    res.json(results)
+    return results;
+  })
+  .catch(function(err){
+    console.log('Oh NO');
+    res.json(err);
+  })
+})
+
+router.post('/addrank', function(req, res){
+  return knex('ranking')
+  .insert({
+    score: req.body.score,
+  })
+  .then(function(results){
+    res.json(results)
+    return results;
+  })
+  .catch(function(err){
+    console.log('Oh NO');
+    res.json(err);
+  })
+})
+
 module.exports = router;
 
-eturn knex('child_goal')
-          .join('reward', 'child_goal.reward_id', '=', 'reward.id')
+// eturn knex('child_goal')
+//           .join('reward', 'child_goal.reward_id', '=', 'reward.id')
