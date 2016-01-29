@@ -10,10 +10,15 @@ router.get('/', function(req, res, next) {
 
 router.get('/data', function(req,res){
   var returnData = {}
-  return knex('comments')
-    .join('posts', 'comments.post_id', '=', 'posts.id' )
+  return knex.select().table('posts')
   .then(function(results){
     returnData.posts = results;
+  })
+  .then(function(){
+    return knex.select().table('comments')
+    .then(function(results){
+      returnData.comments = results;
+    })
   })
   .then(function(){
     return knex.select().table('ranking').avg('score')
